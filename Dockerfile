@@ -1,14 +1,35 @@
-FROM php:7.4-apache
+# Usar uma imagem base com PHP 8.0
+FROM php:8.0-apache
 
-RUN apt-get update
-RUN apt-get install --yes --force-yes cron g++ gettext libicu-dev openssl libc-client-dev libkrb5-dev libxml2-dev libfreetype6-dev libgd-dev libmcrypt-dev bzip2 libbz2-dev libtidy-dev libcurl4-openssl-dev libz-dev libmemcached-dev libxslt-dev
+# Instalar as extensões do PHP necessárias
+RUN docker-php-ext-install pdo_mysql mysqli
+RUN apt-get update && apt-get install -y \
+        libzip-dev \
+        libpng-dev \
+        libonig-dev \
+        libcurl4-openssl-dev \
+        libssl-dev \
+        libc-client-dev \
+        libkrb5-dev \
+        libgd-dev \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install -j$(nproc) zip \
+    && docker-php-ext-install -j$(nproc) mbstring \
+    && docker-php-ext-install -j$(nproc) iconv \
+    && docker-php-ext-install -j$(nproc) imap
 
+# Habilitar mod_rewrite para Apache
 RUN a2enmod rewrite
 
-RUN docker-php-ext-install mysqli 
-RUN docker-php-ext-enable mysqli
+# Habilitar allow_url_fopen no PHP
+RUN echo 'allow_url_fopen=On' >> /usr/local/etc/php/conf.d/docker-php-ext-allow_url_fopen.ini
 
-RUN docker-php-ext-configure gd --with-freetype=/usr --with-jpeg=/usr
-RUN docker-php-ext-install gd
+# Copiar a aplicação para o container
+COPY . /var/www/html
 
-COPY ./ /var/www/html/
+# Conceder permissões apropriadas
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Expor a porta 80
+EXPOSE 80
