@@ -1,5 +1,6 @@
 # Usar uma imagem base com PHP 8.0
-FROM php:8.0-apache
+FROM php:8-apache
+
 
 # Instalar as extensões do PHP necessárias
 RUN docker-php-ext-install pdo_mysql mysqli
