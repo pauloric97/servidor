@@ -30,6 +30,3 @@ COPY . /var/www/html
 # Conceder permissões apropriadas
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
-
-# Expor a porta 80
-EXPOSE 80
