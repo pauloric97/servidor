@@ -1,5 +1,5 @@
 # Usar uma imagem base com PHP 8.0
-FROM php:8.0-apache
+FROM php:8.1-apache
 
 # Definir argumentos para versões específicas, se necessário
 # ARG PHP_EXT_INSTALLER_VERSION=latest
